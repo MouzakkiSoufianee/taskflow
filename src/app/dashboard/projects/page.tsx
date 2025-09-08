@@ -66,7 +66,7 @@ export default function ProjectsPage() {
   )
 
   const getCompletedTasksCount = (project: Project) => {
-    return project.tasks.filter(task => task.status === 'COMPLETED').length
+    return project.tasks.filter(task => task.status === 'DONE').length
   }
 
   const getCompletionRate = (project: Project) => {
