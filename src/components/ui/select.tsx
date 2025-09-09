@@ -2,13 +2,12 @@ import * as React from "react"
 import { cva, type VariantProps } from "class-variance-authority"
 import { cn } from "@/lib/utils"
 import { componentPatterns } from "./design-tokens"
+import { ChevronDown } from "lucide-react"
 
-const inputVariants = cva(
-  // Base styles for all inputs
+const selectVariants = cva(
+  // Base styles for all selects
   `
-    w-full transition-all duration-300 text-sm
-    file:border-0 file:bg-transparent file:text-sm file:font-medium 
-    placeholder:text-white/40 
+    w-full transition-all duration-300 text-sm appearance-none cursor-pointer
     focus:outline-none 
     disabled:cursor-not-allowed disabled:opacity-50
   `,
@@ -60,28 +59,35 @@ const inputVariants = cva(
     },
     defaultVariants: {
       variant: "glass",
-      state: "default",
+      state: "default", 
       size: "default",
     },
   }
 )
 
-export interface InputProps
-  extends Omit<React.InputHTMLAttributes<HTMLInputElement>, 'size'>,
-    VariantProps<typeof inputVariants> {
+export interface SelectOption {
+  value: string
+  label: string
+  disabled?: boolean
+  group?: string
+}
+
+export interface SelectProps
+  extends Omit<React.SelectHTMLAttributes<HTMLSelectElement>, 'size'>,
+    VariantProps<typeof selectVariants> {
   label?: string
   icon?: React.ReactNode
   iconPosition?: "left" | "right"
   error?: string
   success?: boolean | string
   hint?: string
-  onIconClick?: () => void
+  options: SelectOption[]
+  placeholder?: string
 }
 
-const Input = React.forwardRef<HTMLInputElement, InputProps>(
+const Select = React.forwardRef<HTMLSelectElement, SelectProps>(
   ({ 
     className, 
-    type = "text", 
     variant, 
     state, 
     size, 
@@ -91,7 +97,8 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
     error, 
     success, 
     hint,
-    onIconClick,
+    options,
+    placeholder,
     ...props 
   }, ref) => {
     const [isFocused, setIsFocused] = React.useState(false)
@@ -104,33 +111,34 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
     const hasFloatingLabel = variant === "glass" && label
     const shouldFloatLabel = hasFloatingLabel && (isFocused || hasValue)
     
-    const handleFocus = (e: React.FocusEvent<HTMLInputElement>) => {
+    const handleFocus = (e: React.FocusEvent<HTMLSelectElement>) => {
       setIsFocused(true)
       props.onFocus?.(e)
     }
 
-    const handleBlur = (e: React.FocusEvent<HTMLInputElement>) => {
+    const handleBlur = (e: React.FocusEvent<HTMLSelectElement>) => {
       setIsFocused(false)
       props.onBlur?.(e)
     }
 
-    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const handleChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
       setHasValue(e.target.value.length > 0)
       props.onChange?.(e)
     }
 
     // Calculate padding based on icon and label presence
-    const getInputClasses = () => {
-      let classes = inputVariants({ variant, state: currentState, size })
+    const getSelectClasses = () => {
+      let classes = selectVariants({ variant, state: currentState, size })
       
       // Adjust padding for icons
       if (icon) {
         if (iconPosition === "left") {
           classes += hasFloatingLabel ? " pl-12" : " pl-11"
-        } else {
-          classes += " pr-11"
         }
       }
+      
+      // Always add right padding for dropdown arrow
+      classes += " pr-12"
       
       // Adjust padding for floating labels
       if (hasFloatingLabel) {
@@ -139,6 +147,25 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
       
       return classes
     }
+
+    // Group options by group property
+    const groupedOptions = React.useMemo(() => {
+      const groups: Record<string, SelectOption[]> = {}
+      const ungrouped: SelectOption[] = []
+      
+      options.forEach(option => {
+        if (option.group) {
+          if (!groups[option.group]) {
+            groups[option.group] = []
+          }
+          groups[option.group].push(option)
+        } else {
+          ungrouped.push(option)
+        }
+      })
+      
+      return { groups, ungrouped }
+    }, [options])
 
     return (
       <div className="relative group w-full">
@@ -168,38 +195,64 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
             hasFloatingLabel
               ? shouldFloatLabel ? "top-10 left-4" : "top-1/2 -translate-y-1/2 left-4"
               : "top-1/2 -translate-y-1/2 left-4",
-            isFocused ? "text-blue-400" : "text-white/40",
-            onIconClick && "cursor-pointer hover:text-white/60"
-          )}
-          onClick={onIconClick}
-        >
-          {icon}
-        </div>
+            isFocused ? "text-blue-400" : "text-white/40"
+          )}>
+            {icon}
+          </div>
         )}
         
-        {/* Input element */}
-        <input
+        {/* Select element */}
+        <select
           ref={ref}
-          type={type}
-          className={cn(getInputClasses(), className)}
+          className={cn(getSelectClasses(), className)}
           onFocus={handleFocus}
           onBlur={handleBlur}
           onChange={handleChange}
           {...props}
-        />
-        
-        {/* Right icon */}
-        {icon && iconPosition === "right" && (
-          <div className={cn(
-            "absolute right-4 top-1/2 -translate-y-1/2 z-10 transition-all duration-300 flex items-center",
-            isFocused ? "text-blue-400" : "text-white/40",
-            onIconClick && "cursor-pointer hover:text-white/60"
-          )}
-          onClick={onIconClick}
         >
-          {icon}
+          {/* Placeholder option */}
+          {placeholder && (
+            <option value="" disabled className="bg-slate-900 text-white/60">
+              {placeholder}
+            </option>
+          )}
+          
+          {/* Ungrouped options */}
+          {groupedOptions.ungrouped.map((option) => (
+            <option 
+              key={option.value} 
+              value={option.value} 
+              disabled={option.disabled}
+              className="bg-slate-900 text-white hover:bg-slate-800"
+            >
+              {option.label}
+            </option>
+          ))}
+          
+          {/* Grouped options */}
+          {Object.entries(groupedOptions.groups).map(([groupName, groupOptions]) => (
+            <optgroup key={groupName} label={groupName} className="bg-slate-800 text-white/80">
+              {groupOptions.map((option) => (
+                <option 
+                  key={option.value} 
+                  value={option.value} 
+                  disabled={option.disabled}
+                  className="bg-slate-900 text-white hover:bg-slate-800 pl-4"
+                >
+                  {option.label}
+                </option>
+              ))}
+            </optgroup>
+          ))}
+        </select>
+        
+        {/* Dropdown arrow */}
+        <div className={cn(
+          "absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none transition-all duration-300",
+          isFocused ? "text-blue-400 rotate-180" : "text-white/40"
+        )}>
+          <ChevronDown className="h-5 w-5" />
         </div>
-        )}
         
         {/* Enhanced border effect for glass variant */}
         {variant === "glass" && (
@@ -242,6 +295,6 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
   }
 )
 
-Input.displayName = "Input"
+Select.displayName = "Select"
 
-export { Input, inputVariants }
+export { Select, selectVariants }

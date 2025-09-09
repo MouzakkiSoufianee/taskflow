@@ -185,7 +185,7 @@ export default function NewProjectPage() {
       {/* Tips */}
       <Card className="bg-blue-50 border-blue-200">
         <CardContent className="pt-6">
-          <h3 className="text-sm font-medium text-blue-900 mb-2">Tips for creating a great project</h3>
+          <h3 className="text-sm font-medium text-blue-900 mb-2">Project Creation Guidelines</h3>
           <ul className="text-sm text-blue-700 space-y-1">
             <li>• Choose a clear, descriptive name that team members will understand</li>
             <li>• Add a description to help others understand the project's goals</li>

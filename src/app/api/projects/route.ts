@@ -37,9 +37,6 @@ export async function GET(request: NextRequest) {
       },
       include: {
         members: {
-          where: {
-            role: 'OWNER'
-          },
           include: {
             user: {
               select: {
@@ -48,8 +45,7 @@ export async function GET(request: NextRequest) {
                 email: true
               }
             }
-          },
-          take: 1
+          }
         },
         tasks: {
           select: {
@@ -68,14 +64,14 @@ export async function GET(request: NextRequest) {
       }
     })
 
-    // Transform the data to include owner information
-    const projectsWithOwner = projects.map((project: any) => ({
+    // Transform the data to include owner information and full members list
+    const projectsWithData = projects.map((project: any) => ({
       ...project,
-      owner: project.members[0]?.user || null,
-      members: undefined // Remove the members array from the response since we only needed it for owner
+      owner: project.members.find((member: any) => member.role === 'OWNER')?.user || null,
+      members: project.members // Keep all members for task assignment
     }))
 
-    return NextResponse.json(projectsWithOwner)
+    return NextResponse.json(projectsWithData)
   } catch (error) {
     console.error("Error fetching projects:", error)
     return NextResponse.json(

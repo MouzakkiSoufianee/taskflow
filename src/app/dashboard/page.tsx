@@ -11,7 +11,12 @@ import {
   Activity,
   Plus,
   Calendar,
-  TrendingUp
+  TrendingUp,
+  Sparkles,
+  Target,
+  Clock,
+  Award,
+  Zap
 } from "lucide-react"
 
 export default function DashboardPage() {
@@ -26,187 +31,250 @@ export default function DashboardPage() {
   }
 
   const recentActivity = [
-    { id: 1, action: "Created task", target: "Setup authentication", time: "2 hours ago" },
-    { id: 2, action: "Completed task", target: "Database schema", time: "4 hours ago" },
-    { id: 3, action: "Added member", target: "John Doe to TaskFlow Demo", time: "1 day ago" },
+    { id: 1, action: "Created task", target: "Setup authentication", time: "2 hours ago", type: "create" },
+    { id: 2, action: "Completed task", target: "Database schema", time: "4 hours ago", type: "complete" },
+    { id: 3, action: "Added member", target: "John Doe to TaskFlow Demo", time: "1 day ago", type: "member" },
+    { id: 4, action: "Updated project", target: "Website Redesign milestone", time: "2 days ago", type: "update" },
   ]
 
   const recentProjects = [
-    { id: 1, name: "TaskFlow Demo Project", tasks: 6, completed: 4, members: 3 },
-    { id: 2, name: "Website Redesign", tasks: 8, completed: 2, members: 2 },
-    { id: 3, name: "Mobile App", tasks: 4, completed: 2, members: 4 },
+    { id: 1, name: "TaskFlow Demo Project", tasks: 6, completed: 4, members: 3, priority: "high" },
+    { id: 2, name: "Website Redesign", tasks: 8, completed: 2, members: 2, priority: "medium" },
+    { id: 3, name: "Mobile App", tasks: 4, completed: 2, members: 4, priority: "low" },
+  ]
+
+  const quickActions = [
+    { name: "New Project", icon: Plus, href: "/dashboard/projects/new", color: "blue" },
+    { name: "Add Task", icon: CheckSquare, href: "/dashboard/tasks/new", color: "green" },
+    { name: "Invite Member", icon: Users, href: "/dashboard/team/invite", color: "purple" },
+    { name: "View Reports", icon: TrendingUp, href: "/dashboard/reports", color: "orange" },
   ]
 
   return (
-    <div className="space-y-8 p-6">
-      {/* Header */}
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-4xl font-bold bg-gradient-to-r from-gray-900 to-gray-600 bg-clip-text text-transparent">
-            Welcome back, {session?.user?.name || 'User'}! 👋
-          </h1>
-          <p className="text-gray-600 mt-3 text-lg">
-            Here&apos;s what&apos;s happening with your projects today.
-          </p>
+    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900">
+      {/* Animated Background Elements */}
+      <div className="fixed inset-0 overflow-hidden pointer-events-none">
+        <div className="absolute top-20 left-20 w-72 h-72 bg-blue-500/10 rounded-full blur-3xl animate-float"></div>
+        <div className="absolute top-40 right-20 w-96 h-96 bg-purple-500/10 rounded-full blur-3xl animate-float" style={{animationDelay: '2s'}}></div>
+        <div className="absolute bottom-20 left-40 w-80 h-80 bg-pink-500/10 rounded-full blur-3xl animate-float" style={{animationDelay: '4s'}}></div>
+      </div>
+
+      <div className="relative space-y-8 p-6 pt-24">
+        {/* Header */}
+        <div className="flex items-center justify-between animate-fadeInUp">
+          <div>
+            <h1 className="text-5xl font-bold bg-gradient-to-r from-white via-blue-100 to-purple-200 bg-clip-text text-transparent mb-4">
+              Welcome back, {session?.user?.name || 'User'}!
+            </h1>
+            <p className="text-white/70 text-xl">
+              Overview of your current projects and tasks.
+            </p>
+          </div>
+          <div className="flex items-center space-x-4">
+            <button className="btn-secondary-enhanced">
+              <Target className="h-5 w-5 mr-2" />
+              Set Goals
+            </button>
+            <Link href="/dashboard/projects/new">
+              <button className="btn-primary-enhanced">
+                <Plus className="h-5 w-5 mr-2" />
+                New Project
+              </button>
+            </Link>
+          </div>
         </div>
-        <Link href="/dashboard/projects/new">
-          <Button className="bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white shadow-lg hover:shadow-xl transition-all duration-200 btn-scale h-12 px-6">
-            <Plus className="h-5 w-5 mr-2" />
-            New Project
-          </Button>
-        </Link>
-      </div>
 
-      {/* Stats Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        <Card className="bg-gradient-to-br from-blue-50 to-blue-100 border-blue-200 card-hover">
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-3">
-            <CardTitle className="text-sm font-semibold text-blue-700">Total Projects</CardTitle>
-            <div className="p-2 bg-blue-500 rounded-lg">
-              <FolderOpen className="h-5 w-5 text-white" />
+        {/* Quick Actions */}
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 animate-fadeInUp" style={{animationDelay: '0.2s'}}>
+          {quickActions.map((action, index) => (
+            <Link key={action.name} href={action.href}>
+              <div className="glass-card-enhanced group cursor-pointer hover:scale-105 transition-all duration-300">
+                <div className={`w-12 h-12 bg-gradient-to-r ${
+                  action.color === 'blue' ? 'from-blue-500 to-blue-600' :
+                  action.color === 'green' ? 'from-green-500 to-green-600' :
+                  action.color === 'purple' ? 'from-purple-500 to-purple-600' :
+                  'from-orange-500 to-orange-600'
+                } rounded-xl flex items-center justify-center mb-3 group-hover:shadow-lg transition-all duration-300`}>
+                  <action.icon className="h-6 w-6 text-white" />
+                </div>
+                <h3 className="text-white font-semibold text-sm">{action.name}</h3>
+              </div>
+            </Link>
+          ))}
+        </div>
+
+        {/* Stats Cards */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 animate-fadeInUp" style={{animationDelay: '0.4s'}}>
+          <div className="glass-card-enhanced">
+            <div className="flex items-center justify-between mb-4">
+              <div className="p-3 bg-gradient-to-r from-blue-500 to-blue-600 rounded-xl">
+                <FolderOpen className="h-6 w-6 text-white" />
+              </div>
+              <div className="text-right">
+                <div className="text-3xl font-bold text-white mb-1">{stats.totalProjects}</div>
+                <p className="text-sm text-white/60">Total Projects</p>
+              </div>
             </div>
-          </CardHeader>
-          <CardContent>
-            <div className="text-3xl font-bold text-blue-900 mb-2">{stats.totalProjects}</div>
-            <p className="text-xs text-green-600 flex items-center">
-              <TrendingUp className="h-3 w-3 inline mr-1" />
+            <div className="flex items-center text-green-400 text-sm">
+              <TrendingUp className="h-4 w-4 mr-1" />
               +2 from last month
-            </p>
-          </CardContent>
-        </Card>
-
-        <Card className="bg-gradient-to-br from-green-50 to-green-100 border-green-200 card-hover">
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-3">
-            <CardTitle className="text-sm font-semibold text-green-700">Total Tasks</CardTitle>
-            <div className="p-2 bg-green-500 rounded-lg">
-              <CheckSquare className="h-5 w-5 text-white" />
             </div>
-          </CardHeader>
-          <CardContent>
-            <div className="text-3xl font-bold text-green-900 mb-2">{stats.totalTasks}</div>
-            <p className="text-xs text-green-600">
+          </div>
+
+          <div className="glass-card-enhanced">
+            <div className="flex items-center justify-between mb-4">
+              <div className="p-3 bg-gradient-to-r from-green-500 to-green-600 rounded-xl">
+                <CheckSquare className="h-6 w-6 text-white" />
+              </div>
+              <div className="text-right">
+                <div className="text-3xl font-bold text-white mb-1">{stats.totalTasks}</div>
+                <p className="text-sm text-white/60">Total Tasks</p>
+              </div>
+            </div>
+            <div className="text-white/60 text-sm">
               {stats.completedTasks} completed this week
-            </p>
-          </CardContent>
-        </Card>
-
-        <Card className="bg-gradient-to-br from-purple-50 to-purple-100 border-purple-200 card-hover">
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-3">
-            <CardTitle className="text-sm font-semibold text-purple-700">Team Members</CardTitle>
-            <div className="p-2 bg-purple-500 rounded-lg">
-              <Users className="h-5 w-5 text-white" />
             </div>
-          </CardHeader>
-          <CardContent>
-            <div className="text-3xl font-bold text-purple-900 mb-2">{stats.teamMembers}</div>
-            <p className="text-xs text-purple-600">
+          </div>
+
+          <div className="glass-card-enhanced">
+            <div className="flex items-center justify-between mb-4">
+              <div className="p-3 bg-gradient-to-r from-purple-500 to-purple-600 rounded-xl">
+                <Users className="h-6 w-6 text-white" />
+              </div>
+              <div className="text-right">
+                <div className="text-3xl font-bold text-white mb-1">{stats.teamMembers}</div>
+                <p className="text-sm text-white/60">Team Members</p>
+              </div>
+            </div>
+            <div className="text-white/60 text-sm">
               Across all projects
-            </p>
-          </CardContent>
-        </Card>
+            </div>
+          </div>
 
-        <Card className="bg-gradient-to-br from-orange-50 to-orange-100 border-orange-200 card-hover">
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-3">
-            <CardTitle className="text-sm font-semibold text-orange-700">Completion Rate</CardTitle>
-            <div className="p-2 bg-orange-500 rounded-lg">
-              <Activity className="h-5 w-5 text-white" />
+          <div className="glass-card-enhanced">
+            <div className="flex items-center justify-between mb-4">
+              <div className="p-3 bg-gradient-to-r from-orange-500 to-orange-600 rounded-xl">
+                <Award className="h-6 w-6 text-white" />
+              </div>
+              <div className="text-right">
+                <div className="text-3xl font-bold text-white mb-1">
+                  {Math.round((stats.completedTasks / stats.totalTasks) * 100)}%
+                </div>
+                <p className="text-sm text-white/60">Completion Rate</p>
+              </div>
             </div>
-          </CardHeader>
-          <CardContent>
-            <div className="text-3xl font-bold text-orange-900 mb-2">
-              {Math.round((stats.completedTasks / stats.totalTasks) * 100)}%
-            </div>
-            <p className="text-xs text-orange-600">
+            <div className="text-white/60 text-sm">
               This month
-            </p>
-          </CardContent>
-        </Card>
-      </div>
+            </div>
+          </div>
+        </div>
 
-      {/* Recent Projects and Activity */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-        <Card className="bg-white shadow-lg border-0 card-hover">
-          <CardHeader className="pb-4">
-            <CardTitle className="text-xl font-bold text-gray-900 flex items-center gap-2">
-              <FolderOpen className="h-5 w-5 text-blue-500" />
-              Recent Projects
-            </CardTitle>
-            <CardDescription className="text-gray-600">
-              Your most active projects
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
+        {/* Recent Projects and Activity */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 animate-fadeInUp" style={{animationDelay: '0.6s'}}>
+          <div className="glass-card-enhanced">
+            <div className="flex items-center justify-between mb-6">
+              <div className="flex items-center space-x-3">
+                <div className="p-2 bg-gradient-to-r from-blue-500 to-purple-600 rounded-lg">
+                  <FolderOpen className="h-5 w-5 text-white" />
+                </div>
+                <div>
+                  <h3 className="text-xl font-bold text-white">Recent Projects</h3>
+                  <p className="text-white/60 text-sm">Your most active projects</p>
+                </div>
+              </div>
+              <Sparkles className="h-5 w-5 text-white/40" />
+            </div>
+
             <div className="space-y-4">
-              {recentProjects.map((project) => (
+              {recentProjects.map((project, index) => (
                 <Link key={project.id} href={`/dashboard/projects/${project.id}`}>
-                  <div className="flex items-center justify-between p-4 rounded-xl border border-gray-100 hover:bg-gradient-to-r hover:from-blue-50 hover:to-purple-50 hover:shadow-md transition-all duration-200 cursor-pointer group">
-                    <div className="flex items-center space-x-4">
-                      <div className="w-4 h-4 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full shadow-sm"></div>
-                      <div>
-                        <p className="font-semibold text-gray-900 group-hover:text-blue-700">{project.name}</p>
-                        <p className="text-sm text-gray-600">
-                          {project.completed}/{project.tasks} tasks completed
-                        </p>
+                  <div className="project-card-enhanced group cursor-pointer" style={{animationDelay: `${index * 0.1}s`}}>
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center space-x-4">
+                        <div className={`w-4 h-4 rounded-full ${
+                          project.priority === 'high' ? 'bg-red-500' :
+                          project.priority === 'medium' ? 'bg-yellow-500' :
+                          'bg-green-500'
+                        } shadow-lg`}></div>
+                        <div>
+                          <p className="font-semibold text-white group-hover:text-blue-300 transition-colors">
+                            {project.name}
+                          </p>
+                          <p className="text-sm text-white/60">
+                            {project.completed}/{project.tasks} tasks completed
+                          </p>
+                        </div>
                       </div>
-                    </div>
-                    <div className="flex items-center space-x-3 text-sm text-gray-500">
-                      <div className="flex items-center space-x-1">
-                        <Users className="h-4 w-4" />
-                        <span className="font-medium">{project.members}</span>
-                      </div>
-                      <div className="w-12 h-2 bg-gray-200 rounded-full overflow-hidden">
-                        <div 
-                          className="h-full bg-gradient-to-r from-green-400 to-green-500 transition-all duration-500"
-                          style={{width: `${(project.completed / project.tasks) * 100}%`}}
-                        ></div>
+                      <div className="flex items-center space-x-4">
+                        <div className="flex items-center space-x-1 text-white/60">
+                          <Users className="h-4 w-4" />
+                          <span className="font-medium">{project.members}</span>
+                        </div>
+                        <div className="w-16 h-2 bg-white/20 rounded-full overflow-hidden">
+                          <div 
+                            className="h-full bg-gradient-to-r from-blue-400 to-purple-500 transition-all duration-700"
+                            style={{width: `${(project.completed / project.tasks) * 100}%`}}
+                          ></div>
+                        </div>
                       </div>
                     </div>
                   </div>
                 </Link>
               ))}
             </div>
-          </CardContent>
-        </Card>
+          </div>
 
-        <Card className="bg-white shadow-lg border-0 card-hover">
-          <CardHeader className="pb-4">
-            <CardTitle className="text-xl font-bold text-gray-900 flex items-center gap-2">
-              <Activity className="h-5 w-5 text-green-500" />
-              Recent Activity
-            </CardTitle>
-            <CardDescription className="text-gray-600">
-              Latest updates from your team
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
+          <div className="glass-card-enhanced">
+            <div className="flex items-center justify-between mb-6">
+              <div className="flex items-center space-x-3">
+                <div className="p-2 bg-gradient-to-r from-green-500 to-blue-600 rounded-lg">
+                  <Activity className="h-5 w-5 text-white" />
+                </div>
+                <div>
+                  <h3 className="text-xl font-bold text-white">Recent Activity</h3>
+                  <p className="text-white/60 text-sm">Latest updates from your team</p>
+                </div>
+              </div>
+              <Zap className="h-5 w-5 text-white/40" />
+            </div>
+
             <div className="space-y-4">
               {recentActivity.map((activity, index) => (
-                <div key={activity.id} className="flex items-start space-x-4 p-3 rounded-lg hover:bg-gray-50 transition-colors duration-200">
-                  <div className={`w-3 h-3 rounded-full mt-2 ${
-                    index === 0 ? 'bg-green-500' : index === 1 ? 'bg-blue-500' : 'bg-purple-500'
-                  } shadow-sm`}></div>
-                  <div className="flex-1">
-                    <p className="text-sm text-gray-900">
-                      <span className="font-semibold">{activity.action}</span>
-                      {' "'}
-                      <span className="text-blue-600 font-medium hover:text-blue-700 cursor-pointer">{activity.target}</span>
-                      {'"'}
-                    </p>
-                    <p className="text-xs text-gray-500 flex items-center mt-1">
-                      <Calendar className="h-3 w-3 mr-1" />
-                      {activity.time}
-                    </p>
+                <div key={activity.id} className="activity-item-enhanced" style={{animationDelay: `${index * 0.1}s`}}>
+                  <div className="flex items-start space-x-4">
+                    <div className={`w-3 h-3 rounded-full mt-2 shadow-lg ${
+                      activity.type === 'create' ? 'bg-blue-500' :
+                      activity.type === 'complete' ? 'bg-green-500' :
+                      activity.type === 'member' ? 'bg-purple-500' :
+                      'bg-orange-500'
+                    }`}></div>
+                    <div className="flex-1">
+                      <p className="text-sm text-white">
+                        <span className="font-semibold">{activity.action}</span>
+                        {' "'}
+                        <span className="text-blue-300 font-medium hover:text-blue-200 cursor-pointer transition-colors">
+                          {activity.target}
+                        </span>
+                        {'"'}
+                      </p>
+                      <p className="text-xs text-white/50 flex items-center mt-1">
+                        <Clock className="h-3 w-3 mr-1" />
+                        {activity.time}
+                      </p>
+                    </div>
                   </div>
                 </div>
               ))}
             </div>
-            <div className="mt-6 pt-4 border-t border-gray-100">
-              <Button variant="outline" className="w-full btn-scale">
+
+            <div className="mt-6 pt-4 border-t border-white/10">
+              <button className="btn-secondary-enhanced w-full">
+                <Activity className="h-4 w-4 mr-2" />
                 View All Activity
-              </Button>
+              </button>
             </div>
-          </CardContent>
-        </Card>
+          </div>
+        </div>
       </div>
     </div>
   )

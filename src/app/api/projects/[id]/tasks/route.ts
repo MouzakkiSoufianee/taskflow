@@ -163,6 +163,23 @@ export async function POST(
       }
     })
 
+    // Create activity log
+    await prisma.activity.create({
+      data: {
+        type: 'TASK_CREATED',
+        message: `Created task "${task.title}"`,
+        projectId: id,
+        taskId: task.id,
+        userId: user.id,
+        metadata: {
+          taskTitle: task.title,
+          priority: task.priority,
+          status: task.status,
+          assigneeId: task.assigneeId
+        }
+      }
+    })
+
     return NextResponse.json(task)
   } catch (error) {
     console.error("Error creating task:", error)

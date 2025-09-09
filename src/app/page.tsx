@@ -12,7 +12,9 @@ import {
   Zap, 
   Shield,
   ArrowRight,
-  Star
+  Star,
+  Activity,
+  BarChart3
 } from "lucide-react"
 
 export default function HomePage() {
@@ -27,8 +29,11 @@ export default function HomePage() {
 
   if (status === "loading") {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-blue-600"></div>
+      <div className="min-h-screen flex items-center justify-center bg-cosmic-enhanced">
+        <div className="glass-card-enhanced p-8">
+          <div className="animate-spin rounded-full h-32 w-32 border-b-4 border-blue-400 mx-auto"></div>
+          <p className="text-white text-center mt-4 text-lg">Loading TaskFlow...</p>
+        </div>
       </div>
     )
   }
@@ -38,174 +43,267 @@ export default function HomePage() {
   }
 
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen bg-cosmic-enhanced relative overflow-hidden">
+      {/* Animated Background Elements */}
+      <div className="absolute inset-0 overflow-hidden">
+        <div className="absolute -top-40 -right-40 w-80 h-80 bg-blue-500/20 rounded-full blur-3xl animate-float"></div>
+        <div className="absolute top-40 -left-40 w-96 h-96 bg-purple-500/20 rounded-full blur-3xl animate-float" style={{animationDelay: '2s'}}></div>
+        <div className="absolute -bottom-40 right-40 w-64 h-64 bg-pink-500/20 rounded-full blur-3xl animate-float" style={{animationDelay: '4s'}}></div>
+      </div>
+
       {/* Navigation */}
-      <nav className="bg-white border-b border-gray-200">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between h-16">
-            <div className="flex items-center">
-              <div className="flex-shrink-0">
-                <h1 className="text-2xl font-bold text-gray-900">TaskFlow</h1>
+      <nav className="relative z-10 px-4 py-6">
+        <div className="max-w-7xl mx-auto">
+          <div className="glass-card-enhanced">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center space-x-3">
+                <div className="w-10 h-10 bg-gradient-to-r from-blue-600 to-purple-600 rounded-xl flex items-center justify-center">
+                  <span className="text-white font-bold text-xl">T</span>
+                </div>
+                <h1 className="text-2xl font-bold text-white">TaskFlow</h1>
               </div>
-            </div>
-            <div className="flex items-center space-x-4">
-              <Link href="/auth/signin">
-                <Button variant="ghost">Sign in</Button>
-              </Link>
-              <Link href="/auth/signup">
-                <Button>Get Started</Button>
-              </Link>
+              
+              <div className="flex items-center space-x-4">
+                <Link href="/auth/signin">
+                  <button className="btn-secondary-enhanced">Sign In</button>
+                </Link>
+                <Link href="/auth/signup">
+                  <button className="btn-primary-enhanced">Get Started</button>
+                </Link>
+              </div>
             </div>
           </div>
         </div>
       </nav>
 
       {/* Hero Section */}
-      <div className="bg-gradient-to-r from-blue-600 to-purple-600 text-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24">
-          <div className="text-center">
-            <h1 className="text-4xl md:text-6xl font-bold mb-6">
-              Collaborative Task Management
-              <span className="block text-blue-200">Made Simple</span>
+      <main className="relative z-10 px-4 py-20">
+        <div className="max-w-7xl mx-auto text-center">
+          <div className="animate-fade-in-up">
+            <h1 className="text-6xl md:text-8xl font-bold text-white mb-8 leading-tight">
+              Transform Your
+              <span className="block bg-gradient-to-r from-blue-400 to-purple-600 bg-clip-text text-transparent">
+                Productivity
+              </span>
             </h1>
-            <p className="text-xl md:text-2xl mb-8 text-blue-100 max-w-3xl mx-auto">
-              Streamline your team&apos;s workflow with real-time collaboration, 
-              intuitive task management, and powerful project insights.
+            
+            <p className="text-xl md:text-2xl text-white/80 mb-12 max-w-3xl mx-auto leading-relaxed">
+              Experience the future of task management with our intuitive platform designed for modern teams. 
+              Collaborate seamlessly, track progress effortlessly, and achieve more together.
             </p>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
+            
+            <div className="flex flex-col sm:flex-row items-center justify-center gap-6 mb-20">
               <Link href="/auth/signup">
-                <Button size="lg" className="bg-white text-blue-600 hover:bg-gray-100">
+                <button className="btn-primary-enhanced text-lg px-12 py-5">
                   Start Free Trial
-                  <ArrowRight className="ml-2 h-5 w-5" />
-                </Button>
+                  <ArrowRight className="ml-3 h-6 w-6" />
+                </button>
               </Link>
-              <Button size="lg" variant="outline" className="border-white text-white hover:bg-white hover:text-blue-600">
-                View Demo
-              </Button>
+              <Link href="/auth/signin">
+                <button className="btn-secondary-enhanced text-lg px-12 py-5">
+                  Watch Demo
+                </button>
+              </Link>
+            </div>
+          </div>
+
+          {/* Feature Cards */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 animate-slide-in-right">
+            <div className="glass-card-enhanced text-left hover-lift-enhanced">
+              <div className="w-16 h-16 bg-gradient-to-r from-blue-500 to-cyan-500 rounded-2xl flex items-center justify-center mb-6">
+                <CheckSquare className="w-8 h-8 text-white" />
+              </div>
+              <h3 className="text-2xl font-bold text-white mb-4">Smart Task Management</h3>
+              <p className="text-white/70 text-lg leading-relaxed">
+                Organize tasks with intelligent categorization, priority levels, and automated workflow suggestions.
+              </p>
+            </div>
+
+            <div className="glass-card-enhanced text-left hover-lift-enhanced">
+              <div className="w-16 h-16 bg-gradient-to-r from-purple-500 to-pink-500 rounded-2xl flex items-center justify-center mb-6">
+                <Users className="w-8 h-8 text-white" />
+              </div>
+              <h3 className="text-2xl font-bold text-white mb-4">Team Collaboration</h3>
+              <p className="text-white/70 text-lg leading-relaxed">
+                Real-time collaboration with team members, instant updates, and seamless communication channels.
+              </p>
+            </div>
+
+            <div className="glass-card-enhanced text-left hover-lift-enhanced">
+              <div className="w-16 h-16 bg-gradient-to-r from-green-500 to-emerald-500 rounded-2xl flex items-center justify-center mb-6">
+                <BarChart3 className="w-8 h-8 text-white" />
+              </div>
+              <h3 className="text-2xl font-bold text-white mb-4">Advanced Analytics</h3>
+              <p className="text-white/70 text-lg leading-relaxed">
+                Comprehensive insights into team performance, project progress, and productivity metrics.
+              </p>
             </div>
           </div>
         </div>
-      </div>
+      </main>
 
-      {/* Features Section */}
-      <div className="py-24 bg-gray-50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-16">
-            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
-              Everything you need to succeed
+      {/* Features Grid */}
+      <section className="relative z-10 px-4 py-20">
+        <div className="max-w-7xl mx-auto">
+          <div className="text-center mb-16 animate-fade-in-up">
+            <h2 className="text-4xl md:text-5xl font-bold text-white mb-6">
+              Everything You Need to Succeed
             </h2>
-            <p className="text-xl text-gray-600 max-w-2xl mx-auto">
+            <p className="text-xl text-white/80 max-w-3xl mx-auto leading-relaxed">
               Powerful features designed to help teams collaborate effectively and deliver projects on time.
             </p>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            <Card>
-              <CardHeader>
-                <CheckSquare className="h-10 w-10 text-blue-600 mb-4" />
-                <CardTitle>Smart Task Management</CardTitle>
-                <CardDescription>
-                  Create, assign, and track tasks with intuitive drag-and-drop boards and customizable workflows.
-                </CardDescription>
-              </CardHeader>
-            </Card>
+            <div className="glass-card-enhanced hover-lift-enhanced">
+              <Zap className="w-12 h-12 text-yellow-400 mb-4" />
+              <h3 className="text-xl font-bold text-white mb-3">Real-time Updates</h3>
+              <p className="text-white/70">
+                Stay synchronized with instant notifications and live collaboration features.
+              </p>
+            </div>
 
-            <Card>
-              <CardHeader>
-                <Users className="h-10 w-10 text-green-600 mb-4" />
-                <CardTitle>Team Collaboration</CardTitle>
-                <CardDescription>
-                  Work together seamlessly with real-time updates, comments, and activity feeds for every project.
-                </CardDescription>
-              </CardHeader>
-            </Card>
+            <div className="glass-card-enhanced hover-lift-enhanced">
+              <Shield className="w-12 h-12 text-green-400 mb-4" />
+              <h3 className="text-xl font-bold text-white mb-3">Enterprise Security</h3>
+              <p className="text-white/70">
+                Bank-level security with role-based permissions and data encryption.
+              </p>
+            </div>
 
-            <Card>
-              <CardHeader>
-                <Zap className="h-10 w-10 text-yellow-600 mb-4" />
-                <CardTitle>Real-time Updates</CardTitle>
-                <CardDescription>
-                  Stay synchronized with instant notifications and live collaboration features powered by WebSocket technology.
-                </CardDescription>
-              </CardHeader>
-            </Card>
+            <div className="glass-card-enhanced hover-lift-enhanced">
+              <Star className="w-12 h-12 text-purple-400 mb-4" />
+              <h3 className="text-xl font-bold text-white mb-3">Priority Management</h3>
+              <p className="text-white/70">
+                Smart priority levels with due dates and automated reminders.
+              </p>
+            </div>
 
-            <Card>
-              <CardHeader>
-                <Shield className="h-10 w-10 text-purple-600 mb-4" />
-                <CardTitle>Secure & Reliable</CardTitle>
-                <CardDescription>
-                  Enterprise-grade security with role-based permissions and data protection you can trust.
-                </CardDescription>
-              </CardHeader>
-            </Card>
+            <div className="glass-card-enhanced hover-lift-enhanced">
+              <Activity className="w-12 h-12 text-red-400 mb-4" />
+              <h3 className="text-xl font-bold text-white mb-3">Activity Tracking</h3>
+              <p className="text-white/70">
+                Comprehensive activity feeds and team performance insights.
+              </p>
+            </div>
 
-            <Card>
-              <CardHeader>
-                <Star className="h-10 w-10 text-red-600 mb-4" />
-                <CardTitle>Priority Management</CardTitle>
-                <CardDescription>
-                  Keep track of what matters most with priority levels, due dates, and progress tracking.
-                </CardDescription>
-              </CardHeader>
-            </Card>
+            <div className="glass-card-enhanced hover-lift-enhanced">
+              <ArrowRight className="w-12 h-12 text-blue-400 mb-4" />
+              <h3 className="text-xl font-bold text-white mb-3">Seamless Integration</h3>
+              <p className="text-white/70">
+                Connect with your favorite tools through our flexible API.
+              </p>
+            </div>
 
-            <Card>
-              <CardHeader>
-                <ArrowRight className="h-10 w-10 text-indigo-600 mb-4" />
-                <CardTitle>Easy Integration</CardTitle>
-                <CardDescription>
-                  Connect with your favorite tools and services through our flexible API and integrations.
-                </CardDescription>
-              </CardHeader>
-            </Card>
-          </div>
-        </div>
-      </div>
-
-      {/* Demo Section */}
-      <div className="py-24 bg-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-16">
-            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
-              Try it now with demo data
-            </h2>
-            <p className="text-xl text-gray-600 max-w-2xl mx-auto mb-8">
-              Experience TaskFlow with pre-loaded demo projects and tasks. No setup required.
-            </p>
-            <div className="bg-gray-100 rounded-lg p-6 max-w-md mx-auto">
-              <p className="text-sm text-gray-600 mb-2">Demo Account:</p>
-              <p className="font-mono text-sm">demo@taskflow.com</p>
-              <p className="font-mono text-sm">password123</p>
+            <div className="glass-card-enhanced hover-lift-enhanced">
+              <CheckSquare className="w-12 h-12 text-cyan-400 mb-4" />
+              <h3 className="text-xl font-bold text-white mb-3">Kanban Boards</h3>
+              <p className="text-white/70">
+                Visual project management with drag-and-drop functionality.
+              </p>
             </div>
           </div>
         </div>
-      </div>
+      </section>
+
+      {/* Demo Section */}
+      <section className="relative z-10 px-4 py-20">
+        <div className="max-w-4xl mx-auto text-center">
+          <div className="glass-card-enhanced">
+            <h2 className="text-4xl font-bold text-white mb-6">
+              Try TaskFlow Right Now
+            </h2>
+            <p className="text-xl text-white/80 mb-8 max-w-2xl mx-auto">
+              Experience TaskFlow with pre-loaded demo projects and tasks. No setup required.
+            </p>
+            
+            <div className="bg-white/10 backdrop-blur-md rounded-2xl p-8 mb-8 max-w-md mx-auto border border-white/20">
+              <p className="text-white/60 mb-4 text-sm uppercase tracking-wide">Demo Account</p>
+              <div className="space-y-2">
+                <p className="font-mono text-white bg-white/10 px-4 py-2 rounded-lg">demo@taskflow.com</p>
+                <p className="font-mono text-white bg-white/10 px-4 py-2 rounded-lg">password123</p>
+              </div>
+            </div>
+
+            <Link href="/auth/signin">
+              <button className="btn-primary-enhanced text-lg px-12 py-5">
+                Try Demo Now
+                <ArrowRight className="ml-3 h-6 w-6" />
+              </button>
+            </Link>
+          </div>
+        </div>
+      </section>
+
+      {/* Stats Section */}
+      <section className="relative z-10 px-4 py-20">
+        <div className="max-w-7xl mx-auto">
+          <div className="glass-card-enhanced">
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
+              <div className="animate-scale-in">
+                <div className="text-4xl md:text-5xl font-bold text-white mb-2">10K+</div>
+                <div className="text-white/70 text-lg">Active Users</div>
+              </div>
+              <div className="animate-scale-in" style={{animationDelay: '100ms'}}>
+                <div className="text-4xl md:text-5xl font-bold text-white mb-2">50K+</div>
+                <div className="text-white/70 text-lg">Tasks Completed</div>
+              </div>
+              <div className="animate-scale-in" style={{animationDelay: '200ms'}}>
+                <div className="text-4xl md:text-5xl font-bold text-white mb-2">99.9%</div>
+                <div className="text-white/70 text-lg">Uptime</div>
+              </div>
+              <div className="animate-scale-in" style={{animationDelay: '300ms'}}>
+                <div className="text-4xl md:text-5xl font-bold text-white mb-2">24/7</div>
+                <div className="text-white/70 text-lg">Support</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
 
       {/* CTA Section */}
-      <div className="bg-gray-900 text-white py-16">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <h2 className="text-3xl md:text-4xl font-bold mb-4">
-            Ready to boost your team&apos;s productivity?
-          </h2>
-          <p className="text-xl text-gray-300 mb-8 max-w-2xl mx-auto">
-            Join thousands of teams who have streamlined their workflow with TaskFlow.
-          </p>
-          <Link href="/auth/signup">
-            <Button size="lg" className="bg-blue-600 hover:bg-blue-700">
-              Get Started Free
-              <ArrowRight className="ml-2 h-5 w-5" />
-            </Button>
-          </Link>
+      <section className="relative z-10 px-4 py-20">
+        <div className="max-w-4xl mx-auto text-center">
+          <div className="glass-card-enhanced">
+            <h2 className="text-4xl md:text-5xl font-bold text-white mb-6">
+              Ready to Transform Your Workflow?
+            </h2>
+            <p className="text-xl text-white/80 mb-8 max-w-2xl mx-auto">
+              Join thousands of teams already using TaskFlow to streamline their projects and boost productivity.
+            </p>
+            <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
+              <Link href="/auth/signup">
+                <button className="btn-primary-enhanced text-lg px-12 py-5">
+                  Start Your Free Trial
+                  <ArrowRight className="ml-3 h-6 w-6" />
+                </button>
+              </Link>
+              <div className="text-white/60 text-sm">
+                No credit card required • 14-day free trial
+              </div>
+            </div>
+          </div>
         </div>
-      </div>
+      </section>
 
       {/* Footer */}
-      <footer className="bg-white border-t border-gray-200 py-8">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <p className="text-gray-600">
-            © 2025 TaskFlow. Built with Next.js, TypeScript, and Prisma.
-          </p>
+      <footer className="relative z-10 px-4 py-12">
+        <div className="max-w-7xl mx-auto">
+          <div className="glass-card-enhanced">
+            <div className="flex flex-col md:flex-row items-center justify-between">
+              <div className="flex items-center space-x-3 mb-4 md:mb-0">
+                <div className="w-8 h-8 bg-gradient-to-r from-blue-600 to-purple-600 rounded-lg flex items-center justify-center">
+                  <span className="text-white font-bold">T</span>
+                </div>
+                <span className="text-white font-semibold text-lg">TaskFlow</span>
+              </div>
+              
+              <div className="text-white/60 text-center md:text-right">
+                <p>&copy; 2025 TaskFlow. All rights reserved.</p>
+                <p className="text-sm">Built with Next.js, TypeScript, and Tailwind CSS</p>
+              </div>
+            </div>
+          </div>
         </div>
       </footer>
     </div>

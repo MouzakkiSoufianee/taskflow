@@ -137,7 +137,7 @@ async function main() {
   if (firstTask) {
     await prisma.comment.create({
       data: {
-        content: 'Great work on setting this up! The project structure looks clean.',
+        content: 'Project structure has been set up. Ready for development phase.',
         taskId: firstTask.id,
         userId: demoUser2.id,
       },
@@ -183,7 +183,7 @@ async function main() {
   })
 
   console.log('✅ Activities created')
-  console.log('🎉 Seeding completed successfully!')
+  console.log('Seeding completed successfully!')
   
   console.log('\n📋 Demo credentials:')
   console.log('Email: demo@taskflow.com')

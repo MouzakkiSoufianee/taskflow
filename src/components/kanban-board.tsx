@@ -49,29 +49,25 @@ const COLUMNS = [
     id: 'TODO', 
     title: 'To Do', 
     color: 'bg-gradient-to-br from-slate-50 to-slate-100 border-slate-200',
-    accent: 'bg-slate-500',
-    icon: '📋'
+    accent: 'bg-slate-500'
   },
   { 
     id: 'IN_PROGRESS', 
     title: 'In Progress', 
     color: 'bg-gradient-to-br from-blue-50 to-blue-100 border-blue-200',
-    accent: 'bg-blue-500',
-    icon: '⚡'
+    accent: 'bg-blue-500'
   },
   { 
     id: 'IN_REVIEW', 
     title: 'In Review', 
     color: 'bg-gradient-to-br from-yellow-50 to-yellow-100 border-yellow-200',
-    accent: 'bg-yellow-500',
-    icon: '👀'
+    accent: 'bg-yellow-500'
   },
   { 
     id: 'DONE', 
     title: 'Done', 
     color: 'bg-gradient-to-br from-green-50 to-green-100 border-green-200',
-    accent: 'bg-green-500',
-    icon: '✅'
+    accent: 'bg-green-500'
   }
 ]
 
@@ -206,7 +202,7 @@ export default function KanbanBoard({
               <div className="flex items-center justify-between mb-6">
                 <div className="flex items-center gap-3">
                   <div className="flex items-center gap-2">
-                    <span className="text-lg">{column.icon}</span>
+                    <div className={`w-3 h-3 rounded-full ${column.accent}`}></div>
                     <h3 className="font-bold text-lg text-gray-900">{column.title}</h3>
                   </div>
                   <Badge 

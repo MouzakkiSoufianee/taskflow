@@ -160,10 +160,17 @@ export async function PUT(
     }
 
     // Handle status change and position
+    let currentTask: any = null
     if (status !== undefined) {
-      const currentTask = await prisma.task.findUnique({
+      currentTask = await prisma.task.findUnique({
         where: { id: taskId },
-        select: { status: true, position: true }
+        select: { 
+          title: true,
+          status: true, 
+          position: true,
+          priority: true,
+          assigneeId: true
+        }
       })
 
       if (!currentTask) {
@@ -194,9 +201,7 @@ export async function PUT(
       }
     } else if (position !== undefined) {
       updateData.position = position
-    }
-
-    updateData.updatedAt = new Date()
+    }    updateData.updatedAt = new Date()
 
     const task = await prisma.task.update({
       where: {
@@ -212,6 +217,37 @@ export async function PUT(
             email: true,
             avatar: true
           }
+        }
+      }
+    })
+
+    // Create activity log for task updates
+    let activityType: 'TASK_UPDATED' | 'TASK_COMPLETED' = 'TASK_UPDATED'
+    let activityMessage = `Updated task "${task.title}"`
+
+    // Special case for status changes
+    if (status !== undefined && currentTask && currentTask.status !== status) {
+      if (status === 'DONE') {
+        activityType = 'TASK_COMPLETED'
+        activityMessage = `Completed task "${task.title}"`
+      } else {
+        activityMessage = `Moved task "${task.title}" to ${status.replace('_', ' ').toLowerCase()}`
+      }
+    }
+
+    await prisma.activity.create({
+      data: {
+        type: activityType,
+        message: activityMessage,
+        projectId: id,
+        taskId: task.id,
+        userId: user.id,
+        metadata: {
+          taskTitle: task.title,
+          oldStatus: currentTask?.status || null,
+          newStatus: task.status,
+          priority: task.priority,
+          assigneeId: task.assigneeId
         }
       }
     })
@@ -268,10 +304,42 @@ export async function DELETE(
       )
     }
 
+    // Get task info before deletion for activity log
+    const taskToDelete = await prisma.task.findFirst({
+      where: {
+        id: taskId,
+        projectId: id
+      },
+      select: {
+        title: true
+      }
+    })
+
+    if (!taskToDelete) {
+      return NextResponse.json(
+        { error: "Task not found" },
+        { status: 404 }
+      )
+    }
+
     await prisma.task.delete({
       where: {
         id: taskId,
         projectId: id
+      }
+    })
+
+    // Create activity log
+    await prisma.activity.create({
+      data: {
+        type: 'TASK_DELETED',
+        message: `Deleted task "${taskToDelete.title}"`,
+        projectId: id,
+        userId: user.id,
+        metadata: {
+          taskTitle: taskToDelete.title,
+          deletedTaskId: taskId
+        }
       }
     })
 
