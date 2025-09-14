@@ -89,7 +89,7 @@ export default function NewProjectPage() {
       {/* Header */}
       <div className="flex items-center space-x-4">
         <Link href="/dashboard/projects">
-          <Button variant="ghost" size="sm" className="text-white hover:bg-white/10">
+          <Button variant="ghost" size="sm">
             <ArrowLeft className="h-4 w-4 mr-2" />
             Back to Projects
           </Button>
@@ -97,17 +97,17 @@ export default function NewProjectPage() {
       </div>
 
       <div>
-        <h1 className="text-3xl font-bold bg-gradient-to-r from-white via-blue-100 to-purple-200 bg-clip-text text-transparent">Create New Project</h1>
-        <p className="text-slate-300">
+        <h1 className="text-2xl font-bold text-gray-900">Create New Project</h1>
+        <p className="text-gray-600">
           Start organizing your work with a new project
         </p>
       </div>
 
       {/* Form */}
-      <Card className="bg-white/10 backdrop-blur-md border border-white/20 shadow-xl">
+      <Card>
         <CardHeader>
-          <CardTitle className="text-white">Project Details</CardTitle>
-          <CardDescription className="text-slate-300">
+          <CardTitle>Project Details</CardTitle>
+          <CardDescription>
             Choose a name and description for your project
           </CardDescription>
         </CardHeader>
@@ -115,7 +115,7 @@ export default function NewProjectPage() {
           <form onSubmit={handleSubmit} className="space-y-6">
             {/* Project Name */}
             <div className="space-y-2">
-              <label htmlFor="name" className="text-sm font-medium text-white">
+              <label htmlFor="name" className="text-sm font-medium text-gray-700">
                 Project Name *
               </label>
               <Input
@@ -124,20 +124,20 @@ export default function NewProjectPage() {
                 placeholder="Enter project name"
                 value={formData.name}
                 onChange={(e) => handleInputChange('name', e.target.value)}
-                className={`bg-white/5 border-white/20 text-white placeholder:text-slate-400 focus:border-white/40 focus:ring-white/20 ${errors.name ? 'border-red-400' : ''}`}
+                className={errors.name ? 'border-red-500' : ''}
                 disabled={loading}
               />
               {errors.name && (
-                <p className="text-sm text-red-400">{errors.name}</p>
+                <p className="text-sm text-red-600">{errors.name}</p>
               )}
-              <p className="text-xs text-slate-400">
+              <p className="text-xs text-gray-500">
                 {formData.name.length}/100 characters
               </p>
             </div>
 
             {/* Project Description */}
             <div className="space-y-2">
-              <label htmlFor="description" className="text-sm font-medium text-white">
+              <label htmlFor="description" className="text-sm font-medium text-gray-700">
                 Description
               </label>
               <textarea
@@ -146,34 +146,34 @@ export default function NewProjectPage() {
                 placeholder="Describe what this project is about (optional)"
                 value={formData.description}
                 onChange={(e) => handleInputChange('description', e.target.value)}
-                className={`w-full px-3 py-2 bg-white/5 border border-white/20 rounded-md shadow-sm text-white placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-white/20 focus:border-white/40 ${
-                  errors.description ? 'border-red-400' : ''
+                className={`w-full px-3 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${
+                  errors.description ? 'border-red-500' : 'border-gray-300'
                 }`}
                 disabled={loading}
               />
               {errors.description && (
-                <p className="text-sm text-red-400">{errors.description}</p>
+                <p className="text-sm text-red-600">{errors.description}</p>
               )}
-              <p className="text-xs text-slate-400">
+              <p className="text-xs text-gray-500">
                 {formData.description.length}/500 characters
               </p>
             </div>
 
             {/* Submit Error */}
             {errors.submit && (
-              <div className="p-3 bg-red-500/20 border border-red-400/30 rounded-md backdrop-blur-sm">
-                <p className="text-sm text-red-300">{errors.submit}</p>
+              <div className="p-3 bg-red-50 border border-red-200 rounded-md">
+                <p className="text-sm text-red-600">{errors.submit}</p>
               </div>
             )}
 
             {/* Actions */}
-            <div className="flex items-center justify-end space-x-3 pt-6 border-t border-white/20">
+            <div className="flex items-center justify-end space-x-3 pt-6 border-t">
               <Link href="/dashboard/projects">
-                <Button variant="outline" disabled={loading} className="border-white/20 text-white hover:bg-white/10">
+                <Button variant="outline" disabled={loading}>
                   Cancel
                 </Button>
               </Link>
-              <Button type="submit" disabled={loading || !formData.name.trim()} className="bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white border-0">
+              <Button type="submit" disabled={loading || !formData.name.trim()}>
                 {loading && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
                 Create Project
               </Button>
@@ -183,10 +183,10 @@ export default function NewProjectPage() {
       </Card>
 
       {/* Tips */}
-      <Card className="bg-blue-500/10 border border-blue-400/20 backdrop-blur-md shadow-xl">
+      <Card className="bg-blue-50 border-blue-200">
         <CardContent className="pt-6">
-          <h3 className="text-sm font-medium text-blue-300 mb-2">Project Creation Guidelines</h3>
-          <ul className="text-sm text-blue-200 space-y-1">
+          <h3 className="text-sm font-medium text-blue-900 mb-2">Project Creation Guidelines</h3>
+          <ul className="text-sm text-blue-700 space-y-1">
             <li>• Choose a clear, descriptive name that team members will understand</li>
             <li>• Add a description to help others understand the project&apos;s goals</li>
             <li>• You can always edit these details later from the project settings</li>
