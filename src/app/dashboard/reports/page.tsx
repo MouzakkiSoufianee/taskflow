@@ -382,7 +382,7 @@ export default function ReportsPage() {
                       </tr>
                     </thead>
                     <tbody>
-                      {projectStats.map((project, index) => (
+                      {projectStats.map((project) => (
                         <tr key={project.id} className="border-b border-white/10 hover:bg-white/5 transition-colors">
                           <td className="py-4 px-4">
                             <div className="flex items-center space-x-3">
