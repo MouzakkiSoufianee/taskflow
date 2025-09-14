@@ -4,7 +4,7 @@ import { authOptions } from "@/lib/auth"
 import { prisma } from "@/lib/prisma"
 
 // GET /api/projects - Get all projects for the current user
-export async function GET(request: NextRequest) {
+export async function GET() {
   try {
     const session = await getServerSession(authOptions)
     
@@ -65,9 +65,9 @@ export async function GET(request: NextRequest) {
     })
 
     // Transform the data to include owner information and full members list
-    const projectsWithData = projects.map((project: any) => ({
+    const projectsWithData = projects.map((project) => ({
       ...project,
-      owner: project.members.find((member: any) => member.role === 'OWNER')?.user || null,
+      owner: project.members.find((member: { role: string; user: unknown }) => member.role === 'OWNER')?.user || null,
       members: project.members // Keep all members for task assignment
     }))
 

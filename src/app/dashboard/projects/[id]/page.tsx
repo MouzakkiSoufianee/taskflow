@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect, use } from "react"
+import { useState, useEffect, use, useCallback } from "react"
 import { useSession } from "next-auth/react"
 import { useRouter } from "next/navigation"
 import { Card } from "@/components/ui/card"
@@ -77,18 +77,7 @@ export default function ProjectDetailPage({ params }: { params: Promise<{ id: st
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false)
   const [createModalStatus, setCreateModalStatus] = useState("TODO")
 
-  useEffect(() => {
-    if (status === "loading") return
-    if (!session) {
-      router.push("/auth/signin")
-      return
-    }
-    
-    fetchProject()
-    fetchTasks()
-  }, [session, status, resolvedParams.id])
-
-  const fetchProject = async () => {
+  const fetchProject = useCallback(async () => {
     try {
       const response = await fetch(`/api/projects/${resolvedParams.id}`)
       if (!response.ok) {
@@ -99,12 +88,10 @@ export default function ProjectDetailPage({ params }: { params: Promise<{ id: st
     } catch (error) {
       console.error('Error fetching project:', error)
       setError("Failed to load project")
-    } finally {
-      setIsLoading(false)
     }
-  }
+  }, [resolvedParams.id])
 
-  const fetchTasks = async () => {
+  const fetchTasks = useCallback(async () => {
     try {
       const response = await fetch(`/api/projects/${resolvedParams.id}/tasks`)
       if (!response.ok) {
@@ -114,8 +101,21 @@ export default function ProjectDetailPage({ params }: { params: Promise<{ id: st
       setTasks(data)
     } catch (error) {
       console.error('Error fetching tasks:', error)
+    } finally {
+      setIsLoading(false)
     }
-  }
+  }, [resolvedParams.id])
+
+  useEffect(() => {
+    if (status === "loading") return
+    if (!session) {
+      router.push("/auth/signin")
+      return
+    }
+    
+    fetchProject()
+    fetchTasks()
+  }, [session, status, resolvedParams.id, fetchProject, fetchTasks, router])
 
   const handleTaskUpdate = (updatedTask: Task) => {
     setTasks(tasks.map(task => 
@@ -128,23 +128,9 @@ export default function ProjectDetailPage({ params }: { params: Promise<{ id: st
     setIsCreateModalOpen(true)
   }
 
-  const handleTaskDelete = async (taskId: string) => {
-    try {
-      const response = await fetch(`/api/projects/${resolvedParams.id}/tasks/${taskId}`, {
-        method: 'DELETE'
-      })
-      
-      if (!response.ok) {
-        throw new Error('Failed to delete task')
-      }
-      
-      setTasks(tasks.filter(task => task.id !== taskId))
-    } catch (error) {
-      console.error('Error deleting task:', error)
-    }
-  }
 
-  const handleCreateTask = async (taskData: any) => {
+
+  const handleCreateTask = async (taskData: { title: string; description?: string; priority?: string; assigneeId?: string; dueDate?: string }) => {
     try {
       const response = await fetch(`/api/projects/${resolvedParams.id}/tasks`, {
         method: 'POST',
@@ -206,10 +192,10 @@ export default function ProjectDetailPage({ params }: { params: Promise<{ id: st
 
   const getStatusBadgeColor = (status: string) => {
     switch (status) {
-      case 'ACTIVE': return 'bg-green-100 text-green-800'
-      case 'DONE': return 'bg-blue-100 text-blue-800'
-      case 'ARCHIVED': return 'bg-gray-100 text-gray-800'
-      default: return 'bg-gray-100 text-gray-800'
+      case 'ACTIVE': return 'bg-green-500/20 text-green-300 border border-green-400/30'
+      case 'DONE': return 'bg-blue-500/20 text-blue-300 border border-blue-400/30'
+      case 'ARCHIVED': return 'bg-gray-500/20 text-gray-300 border border-gray-400/30'
+      default: return 'bg-gray-500/20 text-gray-300 border border-gray-400/30'
     }
   }
 
@@ -226,14 +212,14 @@ export default function ProjectDetailPage({ params }: { params: Promise<{ id: st
             variant="ghost"
             size="sm"
             onClick={() => router.push('/dashboard/projects')}
-            className="flex items-center gap-2 hover:bg-gray-100 btn-scale"
+            className="flex items-center gap-2 hover:bg-white/10 text-white btn-scale"
           >
             <ArrowLeft className="h-4 w-4" />
             Back to Projects
           </Button>
         </div>
         <div className="flex items-center gap-3">
-          <Button variant="outline" size="sm" className="btn-scale">
+          <Button variant="outline" size="sm" className="btn-scale border-white/20 text-white hover:bg-white/10">
             <Settings className="h-4 w-4 mr-2" />
             Settings
           </Button>
@@ -241,11 +227,11 @@ export default function ProjectDetailPage({ params }: { params: Promise<{ id: st
       </div>
 
       {/* Project Info */}
-      <Card className="p-8 card-hover border-0 shadow-lg bg-gradient-to-r from-white to-gray-50">
+      <Card className="p-8 card-hover shadow-xl bg-white/10 backdrop-blur-md border border-white/20">
         <div className="flex items-start justify-between">
           <div className="flex-1">
             <div className="flex items-center gap-4 mb-3">
-              <h1 className="text-3xl font-bold bg-gradient-to-r from-gray-900 to-gray-600 bg-clip-text text-transparent">
+              <h1 className="text-3xl font-bold bg-gradient-to-r from-white via-blue-100 to-purple-200 bg-clip-text text-transparent">
                 {project.name}
               </h1>
               <Badge className={`${getStatusBadgeColor(project.status)} px-3 py-1 font-medium text-sm`}>
@@ -253,36 +239,36 @@ export default function ProjectDetailPage({ params }: { params: Promise<{ id: st
               </Badge>
             </div>
             {project.description && (
-              <p className="text-gray-600 mb-6 text-lg leading-relaxed">{project.description}</p>
+              <p className="text-slate-300 mb-6 text-lg leading-relaxed">{project.description}</p>
             )}
             
             {/* Project Stats */}
             <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
-              <div className="text-center p-4 bg-gray-50 rounded-xl border border-gray-100">
-                <div className="text-3xl font-bold text-gray-900 mb-1">{todoTasks}</div>
-                <div className="text-sm text-gray-500 font-medium">To Do</div>
+              <div className="text-center p-4 bg-white/5 rounded-xl border border-white/10 backdrop-blur-sm">
+                <div className="text-3xl font-bold text-white mb-1">{todoTasks}</div>
+                <div className="text-sm text-slate-400 font-medium">To Do</div>
               </div>
-              <div className="text-center p-4 bg-blue-50 rounded-xl border border-blue-100">
-                <div className="text-3xl font-bold text-blue-600 mb-1">{inProgressTasks}</div>
-                <div className="text-sm text-blue-600 font-medium">In Progress</div>
+              <div className="text-center p-4 bg-blue-500/10 rounded-xl border border-blue-400/20 backdrop-blur-sm">
+                <div className="text-3xl font-bold text-blue-300 mb-1">{inProgressTasks}</div>
+                <div className="text-sm text-blue-300 font-medium">In Progress</div>
               </div>
-              <div className="text-center p-4 bg-green-50 rounded-xl border border-green-100">
-                <div className="text-3xl font-bold text-green-600 mb-1">{completedTasks}</div>
-                <div className="text-sm text-green-600 font-medium">Completed</div>
+              <div className="text-center p-4 bg-green-500/10 rounded-xl border border-green-400/20 backdrop-blur-sm">
+                <div className="text-3xl font-bold text-green-300 mb-1">{completedTasks}</div>
+                <div className="text-sm text-green-300 font-medium">Completed</div>
               </div>
-              <div className="text-center p-4 bg-purple-50 rounded-xl border border-purple-100">
-                <div className="text-3xl font-bold text-purple-600 mb-1">{project._count.members}</div>
-                <div className="text-sm text-purple-600 font-medium">Members</div>
+              <div className="text-center p-4 bg-purple-500/10 rounded-xl border border-purple-400/20 backdrop-blur-sm">
+                <div className="text-3xl font-bold text-purple-300 mb-1">{project._count.members}</div>
+                <div className="text-sm text-purple-300 font-medium">Members</div>
               </div>
             </div>
           </div>
 
           {/* Team Members */}
           <div className="flex flex-col items-end gap-3 ml-8">
-            <div className="text-sm text-gray-500 font-medium">Team</div>
+            <div className="text-sm text-slate-400 font-medium">Team</div>
             <div className="flex -space-x-3">
               {project.members.slice(0, 5).map((member) => (
-                <Avatar key={member.id} className="h-10 w-10 border-3 border-white shadow-lg ring-2 ring-gray-100 hover:ring-blue-200 transition-all">
+                <Avatar key={member.id} className="h-10 w-10 border-3 border-white/20 shadow-lg ring-2 ring-white/10 hover:ring-blue-400/30 transition-all">
                   <AvatarImage
                     src={member.user.avatar || `/api/avatar/${member.user.email}`}
                     alt={member.user.name}
@@ -293,8 +279,8 @@ export default function ProjectDetailPage({ params }: { params: Promise<{ id: st
                 </Avatar>
               ))}
               {project.members.length > 5 && (
-                <div className="h-10 w-10 rounded-full bg-gradient-to-br from-gray-100 to-gray-200 border-3 border-white shadow-lg ring-2 ring-gray-100 flex items-center justify-center">
-                  <span className="text-sm font-bold text-gray-600">
+                <div className="h-10 w-10 rounded-full bg-white/10 backdrop-blur-md border-3 border-white/20 shadow-lg ring-2 ring-white/10 flex items-center justify-center">
+                  <span className="text-sm font-bold text-white">
                     +{project.members.length - 5}
                   </span>
                 </div>
@@ -305,10 +291,10 @@ export default function ProjectDetailPage({ params }: { params: Promise<{ id: st
       </Card>
 
       {/* Kanban Board */}
-      <Card className="p-6">
+      <Card className="p-6 bg-white/10 backdrop-blur-md border border-white/20 shadow-xl">
         <div className="flex items-center justify-between mb-6">
-          <h2 className="text-lg font-semibold text-gray-900">Task Board</h2>
-          <Button onClick={() => handleTaskCreate('TODO')} size="sm">
+          <h2 className="text-lg font-semibold text-white">Task Board</h2>
+          <Button onClick={() => handleTaskCreate('TODO')} size="sm" className="bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white border-0">
             <Plus className="h-4 w-4 mr-2" />
             Add Task
           </Button>
@@ -319,7 +305,6 @@ export default function ProjectDetailPage({ params }: { params: Promise<{ id: st
           initialTasks={tasks}
           onTaskUpdate={handleTaskUpdate}
           onTaskCreate={handleTaskCreate}
-          onTaskDelete={handleTaskDelete}
         />
       </Card>
 

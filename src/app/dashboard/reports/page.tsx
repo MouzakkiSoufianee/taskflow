@@ -2,12 +2,10 @@
 
 import { useState, useEffect } from "react"
 import Link from "next/link"
-import { useSession } from "next-auth/react"
 import { 
   ArrowLeft, 
   BarChart3,
   TrendingUp,
-  TrendingDown,
   Users,
   CheckSquare,
   Clock,
@@ -16,7 +14,6 @@ import {
   Award,
   Calendar,
   Download,
-  Filter,
   Sparkles
 } from "lucide-react"
 
@@ -39,8 +36,23 @@ interface ActivityStats {
   tasksCompletedThisWeek: number
 }
 
+interface ProjectData {
+  id: string
+  name: string
+  _count?: { tasks?: number; members?: number }
+  tasks?: Array<{ status: string }>
+}
+
+interface ActivityData {
+  createdAt: string
+  type: string
+}
+
+interface TaskData {
+  status: string
+}
+
 export default function ReportsPage() {
-  const { data: session } = useSession()
   const [loading, setLoading] = useState(true)
   const [projectStats, setProjectStats] = useState<ProjectStats[]>([])
   const [activityStats, setActivityStats] = useState<ActivityStats | null>(null)
@@ -65,15 +77,15 @@ export default function ReportsPage() {
         const activities = await activitiesRes.json()
 
         // Calculate project statistics
-        const stats: ProjectStats[] = projects.map((project: any) => ({
+        const stats: ProjectStats[] = projects.map((project: ProjectData) => ({
           id: project.id,
           name: project.name,
           totalTasks: project._count?.tasks || 0,
-          completedTasks: project.tasks?.filter((t: any) => t.status === 'DONE').length || 0,
-          inProgressTasks: project.tasks?.filter((t: any) => t.status === 'IN_PROGRESS').length || 0,
+          completedTasks: project.tasks?.filter((t: TaskData) => t.status === 'DONE').length || 0,
+          inProgressTasks: project.tasks?.filter((t: TaskData) => t.status === 'IN_PROGRESS').length || 0,
           members: project._count?.members || 0,
           completionRate: project._count?.tasks 
-            ? Math.round(((project.tasks?.filter((t: any) => t.status === 'DONE').length || 0) / project._count.tasks) * 100)
+            ? Math.round(((project.tasks?.filter((t: TaskData) => t.status === 'DONE').length || 0) / project._count.tasks) * 100)
             : 0,
           avgTasksPerMember: project._count?.members 
             ? Math.round((project._count?.tasks || 0) / project._count.members)
@@ -83,15 +95,15 @@ export default function ReportsPage() {
         // Calculate activity statistics
         const activityStats: ActivityStats = {
           totalActivities: activities.length,
-          recentActivities: activities.filter((a: any) => 
+          recentActivities: activities.filter((a: ActivityData) => 
             new Date(a.createdAt) > new Date(Date.now() - 7 * 24 * 60 * 60 * 1000)
           ).length,
           mostActiveUser: "Demo User", // Simplified for now
-          tasksCreatedThisWeek: activities.filter((a: any) => 
+          tasksCreatedThisWeek: activities.filter((a: ActivityData) => 
             a.type === 'TASK_CREATED' && 
             new Date(a.createdAt) > new Date(Date.now() - 7 * 24 * 60 * 60 * 1000)
           ).length,
-          tasksCompletedThisWeek: activities.filter((a: any) => 
+          tasksCompletedThisWeek: activities.filter((a: ActivityData) => 
             a.type === 'TASK_COMPLETED' && 
             new Date(a.createdAt) > new Date(Date.now() - 7 * 24 * 60 * 60 * 1000)
           ).length,
@@ -140,7 +152,7 @@ export default function ReportsPage() {
                   Analytics & Reports
                 </h1>
                 <p className="text-white/70 text-lg mt-2">
-                  Track your team's productivity and project insights
+                  Track your team&apos;s productivity and project insights
                 </p>
               </div>
             </div>
@@ -250,8 +262,8 @@ export default function ReportsPage() {
                   </div>
 
                   <div className="space-y-4">
-                    {projectStats.slice(0, 5).map((project, index) => (
-                      <div key={project.id} className="project-card-enhanced" style={{animationDelay: `${index * 0.1}s`}}>
+                              {projectStats.map((project) => (
+                      <div key={project.id} className="project-card-enhanced">
                         <div className="flex items-center justify-between mb-3">
                           <h4 className="text-white font-semibold">{project.name}</h4>
                           <span className="text-white/60 text-sm">{project.completionRate}%</span>

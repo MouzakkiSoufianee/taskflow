@@ -3,7 +3,6 @@
 import { useState, useEffect } from "react"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
-import { useSession } from "next-auth/react"
 import { 
   ArrowLeft, 
   Plus,
@@ -11,7 +10,6 @@ import {
   User,
   Flag,
   AlertCircle,
-  Sparkles,
   CheckCircle,
   Building,
   Type,
@@ -21,7 +19,6 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import { Select } from "@/components/ui/select"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 
 interface Project {
   id: string
@@ -37,7 +34,6 @@ interface Project {
 }
 
 export default function NewTaskPage() {
-  const { data: session } = useSession()
   const router = useRouter()
   const [loading, setLoading] = useState(false)
   const [projects, setProjects] = useState<Project[]>([])
@@ -61,7 +57,7 @@ export default function NewTaskPage() {
       if (response.ok) {
         const data = await response.json()
         // Ensure each project has members array
-        const projectsWithMembers = data.map((project: any) => ({
+        const projectsWithMembers = data.map((project: { id: string; name: string; members?: unknown[] }) => ({
           ...project,
           members: project.members || []
         }))
@@ -101,7 +97,7 @@ export default function NewTaskPage() {
         const error = await response.json()
         setErrors({ submit: error.error || "Failed to create task" })
       }
-    } catch (error) {
+    } catch {
       setErrors({ submit: "An unexpected error occurred" })
     } finally {
       setLoading(false)

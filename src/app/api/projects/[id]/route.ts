@@ -85,7 +85,7 @@ export async function GET(
     }
 
     // Find the owner and transform the data
-    const owner = project.members.find((member: any) => member.role === 'OWNER')?.user || null
+    const owner = project.members.find((member: { role: string; user: unknown }) => member.role === 'OWNER')?.user || null
     const projectWithOwner = {
       ...project,
       owner,
@@ -195,7 +195,7 @@ export async function PUT(
     })
 
     // Find the owner and transform the data
-    const owner = updatedProject.members.find((member: any) => member.role === 'OWNER')?.user || null
+    const owner = updatedProject.members.find((member: { role: string; user: unknown }) => member.role === 'OWNER')?.user || null
     const projectWithOwner = {
       ...updatedProject,
       owner,

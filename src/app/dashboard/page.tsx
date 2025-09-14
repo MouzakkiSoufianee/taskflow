@@ -2,15 +2,12 @@
 
 import Link from "next/link"
 import { useSession } from "next-auth/react"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
 import { 
   FolderOpen, 
   CheckSquare, 
   Users, 
   Activity,
   Plus,
-  Calendar,
   TrendingUp,
   Sparkles,
   Target,
@@ -86,7 +83,7 @@ export default function DashboardPage() {
 
         {/* Quick Actions */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 animate-fadeInUp" style={{animationDelay: '0.2s'}}>
-          {quickActions.map((action, index) => (
+          {quickActions.map((action) => (
             <Link key={action.name} href={action.href}>
               <div className="glass-card-enhanced group cursor-pointer hover:scale-105 transition-all duration-300">
                 <div className={`w-12 h-12 bg-gradient-to-r ${

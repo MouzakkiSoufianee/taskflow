@@ -6,8 +6,7 @@ import { useRouter } from "next/navigation"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
-import { Github, Mail, Eye, EyeOff, Sparkles, Lock, User, Shield, Check } from "lucide-react"
+import { Github, Mail, Eye, EyeOff, Sparkles, Lock, Shield, Check, User } from "lucide-react"
 
 export default function SignUpPage() {
   const [name, setName] = useState("")
@@ -75,7 +74,7 @@ export default function SignUpPage() {
     setIsLoading(true)
     try {
       await signIn(provider, { callbackUrl: "/dashboard" })
-    } catch (error) {
+    } catch {
       setError("An error occurred. Please try again.")
       setIsLoading(false)
     }

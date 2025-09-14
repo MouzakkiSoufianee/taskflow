@@ -1,8 +1,7 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, useCallback } from "react"
 import Link from "next/link"
-import { useRouter } from "next/navigation"
 import { useSession } from "next-auth/react"
 import { 
   ArrowLeft, 
@@ -37,7 +36,6 @@ interface Project {
 
 export default function TeamInvitePage() {
   const { data: session } = useSession()
-  const router = useRouter()
   const [loading, setLoading] = useState(false)
   const [projects, setProjects] = useState<Project[]>([])
   const [selectedProject, setSelectedProject] = useState<string>("")
@@ -50,11 +48,7 @@ export default function TeamInvitePage() {
   const [success, setSuccess] = useState<string>("")
   const [inviteLink, setInviteLink] = useState<string>("")
 
-  useEffect(() => {
-    fetchProjects()
-  }, [])
-
-  const fetchProjects = async () => {
+  const fetchProjects = useCallback(async () => {
     try {
       const response = await fetch("/api/projects")
       if (response.ok) {
@@ -73,7 +67,11 @@ export default function TeamInvitePage() {
     } catch (error) {
       console.error("Error fetching projects:", error)
     }
-  }
+  }, [session?.user?.email])
+
+  useEffect(() => {
+    fetchProjects()
+  }, [fetchProjects])
 
   const handleEmailInvite = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -102,7 +100,7 @@ export default function TeamInvitePage() {
         const error = await response.json()
         setErrors({ submit: error.error || "Failed to send invitation" })
       }
-    } catch (error) {
+    } catch {
       setErrors({ submit: "An unexpected error occurred" })
     } finally {
       setLoading(false)
@@ -166,7 +164,7 @@ export default function TeamInvitePage() {
                 {projects.length === 0 ? (
                   <div className="text-center py-8">
                     <Users className="h-16 w-16 text-white/30 mx-auto mb-4" />
-                    <p className="text-white/60">You don't have permission to invite members to any projects.</p>
+                    <p className="text-white/60">You don&apos;t have permission to invite members to any projects.</p>
                     <p className="text-white/40 text-sm mt-2">Only project owners and admins can invite new members.</p>
                   </div>
                 ) : (

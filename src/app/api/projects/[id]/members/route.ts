@@ -181,19 +181,30 @@ export async function POST(
   }
 }
 
-// DELETE /api/projects/[id]/members/[memberId] - Remove member from project
+// DELETE /api/projects/[id]/members - Remove member from project
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: Promise<{ id: string; memberId: string }> }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const session = await getServerSession(authOptions)
-    const { id, memberId } = await params
+    const { id } = await params
     
     if (!session?.user?.email) {
       return NextResponse.json(
         { error: "Unauthorized" },
         { status: 401 }
+      )
+    }
+
+    // Get memberId from request body
+    const body = await request.json()
+    const { memberId } = body
+
+    if (!memberId) {
+      return NextResponse.json(
+        { error: "Member ID is required" },
+        { status: 400 }
       )
     }
 

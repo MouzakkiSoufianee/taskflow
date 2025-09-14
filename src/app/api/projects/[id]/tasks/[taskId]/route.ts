@@ -131,7 +131,7 @@ export async function PUT(
     const { title, description, status, priority, assigneeId, dueDate, position } = body
 
     // If status is changing, we need to handle position
-    let updateData: any = {}
+    const updateData: Record<string, unknown> = {}
 
     if (title !== undefined) {
       if (!title || title.trim().length === 0) {
@@ -160,7 +160,7 @@ export async function PUT(
     }
 
     // Handle status change and position
-    let currentTask: any = null
+    let currentTask: { title: string; priority: string; position: number; status: string; assigneeId: string | null } | null = null
     if (status !== undefined) {
       currentTask = await prisma.task.findUnique({
         where: { id: taskId },

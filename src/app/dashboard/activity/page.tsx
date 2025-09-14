@@ -1,9 +1,17 @@
-import { Suspense } from 'react'
 import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
 import { redirect } from 'next/navigation'
 import Image from 'next/image'
+
+// Activity type definition
+type ActivityWithRelations = {
+  type: string
+  message: string
+  user: { name: string | null; email: string } | null
+  project: { name: string } | null
+  task: { title: string } | null
+}
 
 // Activity type icons
 const getActivityIcon = (type: string) => {
@@ -32,35 +40,9 @@ const getActivityIcon = (type: string) => {
   }
 }
 
-// Activity type colors
-const getActivityColor = (type: string) => {
-  switch (type) {
-    case 'TASK_CREATED':
-      return 'from-green-500 to-emerald-500'
-    case 'TASK_UPDATED':
-      return 'from-blue-500 to-cyan-500'
-    case 'TASK_COMPLETED':
-      return 'from-purple-500 to-violet-500'
-    case 'TASK_DELETED':
-      return 'from-red-500 to-rose-500'
-    case 'PROJECT_CREATED':
-      return 'from-indigo-500 to-blue-500'
-    case 'PROJECT_UPDATED':
-      return 'from-cyan-500 to-teal-500'
-    case 'MEMBER_ADDED':
-      return 'from-yellow-500 to-amber-500'
-    case 'MEMBER_REMOVED':
-      return 'from-orange-500 to-red-500'
-    case 'COMMENT_ADDED':
-      return 'from-pink-500 to-rose-500'
-    default:
-      return 'from-gray-500 to-slate-500'
-  }
-}
-
 // Format activity message
-const formatActivityMessage = (activity: any) => {
-  const { type, message, user, project, task } = activity
+const formatActivityMessage = (activity: ActivityWithRelations) => {
+  const { type, message, project, task } = activity
   
   switch (type) {
     case 'TASK_CREATED':
@@ -254,12 +236,12 @@ export default async function ActivityPage() {
   const { activities, stats, activeUsers } = await getActivityData(currentUser.id)
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 p-6">
+    <div className="p-6">
       <div className="max-w-7xl mx-auto">
         {/* Header */}
         <div className="mb-8">
           <h1 className="text-4xl font-bold text-white mb-2">Activity Feed</h1>
-          <p className="text-slate-300">Track what's happening across your projects</p>
+          <p className="text-slate-300">Track what&apos;s happening across your projects</p>
         </div>
 
         {/* Stats Cards */}
@@ -279,7 +261,7 @@ export default async function ActivityPage() {
           <div className="bg-white/10 backdrop-blur-md rounded-2xl border border-white/20 p-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-slate-300 text-sm">Today's Activities</p>
+                <p className="text-slate-300 text-sm">Today&apos;s Activities</p>
                 <p className="text-3xl font-bold text-white">{stats.today}</p>
               </div>
               <div className="w-12 h-12 bg-gradient-to-r from-green-500 to-emerald-500 rounded-full flex items-center justify-center">
@@ -317,7 +299,13 @@ export default async function ActivityPage() {
                     <p className="text-slate-500 text-sm">Start working on your projects to see activity here</p>
                   </div>
                 ) : (
-                  activities.map((activity) => (
+                  activities.map((activity: ActivityWithRelations & { 
+                    id: string; 
+                    createdAt: Date; 
+                    user: { name: string | null; email: string; avatar: string | null; id: string }; 
+                    project: { name: string; color?: string; id: string } | null;
+                    task: { title: string; status?: string; id?: string; priority?: string } | null;
+                  }) => (
                     <div key={activity.id} className="flex items-start space-x-4 p-4 rounded-xl bg-white/5 border border-white/10 hover:bg-white/10 transition-all duration-200">
                       {/* User Avatar */}
                       <div className="flex-shrink-0">

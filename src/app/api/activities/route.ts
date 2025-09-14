@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
+import { ActivityType, Prisma } from '@prisma/client'
 
 export async function GET(request: NextRequest) {
   try {
@@ -27,7 +28,7 @@ export async function GET(request: NextRequest) {
     }
 
     // Build where clause
-    const where: any = {}
+    const where: Prisma.ActivityWhereInput = {}
 
     // If projectId is specified, check if user has access to the project
     if (projectId) {
@@ -57,7 +58,7 @@ export async function GET(request: NextRequest) {
 
     // Filter by activity type if specified
     if (type) {
-      where.type = type
+      where.type = type as ActivityType
     }
 
     // Get activities with related data
